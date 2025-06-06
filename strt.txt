@@ -12,4 +12,5 @@ password-vault/
 ├── tests/
 │   └── test_crypto.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
