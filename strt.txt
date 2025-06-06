@@ -6,7 +6,8 @@ password-vault/
 │   ├── crypto.py      
 │   └── auth.py        
 ├── data/
-│   └── vault.enc      
+│   ├── vault.enc    
+|   ├── master.json
 ├── utils/
 │   └── generator.py   
 ├── tests/
