@@ -1,2 +1,3 @@
+git add .
 git commit -m "Initial commit: base project structure"
 git push -u origin main
