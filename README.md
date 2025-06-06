@@ -1,2 +1,1 @@
-# PSWRD
-Projet Python (chiffrement de donnees)
+A secure local password manager in Python
