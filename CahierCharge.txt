@@ -1,0 +1,45 @@
+Objectif general :
+
+  Developper une application locale securisee en Python permettant de stocker, consulter et gerer des mots de passe, protegee par un mot de passe maitre. L'application chiffrera les donnees en local (aucun cloud).
+
+
+Fonctionnalites principales :
+
+  Authentification :
+
+    Systeme de mot de passe maitre requis pour acceder a l'application
+
+    Possibilite de creer un mot de passe maitre a la premiere utilisation
+
+    Stockage securise (hashe) du mot de passe maitre (ex: PBKDF2 ou bcrypt)
+
+  Gestion des mots de passe :
+
+    Ajouter un mot de passe (nom du site/service, identifiant/email, mot de passe, note facultative)
+
+    Modifier / Supprimer / Consulter les entrees
+
+    Rechercher un mot de passe par nom de service
+
+  Securite :
+
+    Chiffrement des donnees locales avec une cle derivee du mot de passe maitre
+
+    Fichier de donnees chiffre (format .vault ou .json.enc)
+
+    Generateur de mots de passe forts (longueur, caracteres speciaux…)
+
+  Interface :
+
+    Interface en terminal dans un premier temps
+
+    Interface graphique optionnelle par la suite avec tkinter
+
+  Bonus (facultatif) :
+
+    Timeout d’inactivite
+
+    Possibilite d’exporter/deverrouiller temporairement un mot de passe
+
+  Historique d’acces ou modification
+

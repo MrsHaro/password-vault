@@ -1,0 +1,15 @@
+password-vault/
+├── main.py
+├── vault/
+│   ├── __init__.py
+│   ├── manager.py     
+│   ├── crypto.py      
+│   └── auth.py        
+├── data/
+│   └── vault.enc      
+├── utils/
+│   └── generator.py   
+├── tests/
+│   └── test_crypto.py
+├── requirements.txt
+└── README.md
