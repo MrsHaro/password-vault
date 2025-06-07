@@ -1,6 +1,8 @@
 from vault.crypto import CryptoManager
 import os
 import time
+import random
+import string
 
 class PasswordManager:
     def __init__(self, auth):
@@ -16,7 +18,10 @@ class PasswordManager:
             print("1. Lister les mots de passe")
             print("2. Ajouter un mot de passe")
             print("3. Supprimer un mot de passe")
-            print("4. Quitter")
+            print("4. Rechercher un mot de passe")
+            print("5. Générer un mot de passe aléatoire")
+            print("6. Modifier un mot de passe")
+            print("7. Quitter")
             choix = input("Choix : ")
 
             if choix == '1':
@@ -26,6 +31,14 @@ class PasswordManager:
             elif choix == '3':
                 self.supprimer_password()
             elif choix == '4':
+                self.rechercher_password()
+            elif choix == '5':
+                print("\n\nMot de passe généré :", self.generer_mot_de_passe())
+                input("\nAppuyez sur Entrée pour continuer...")
+                os.system('cls' if os.name == 'nt' else 'clear')
+            elif choix == '6':
+                self.modifier_password()
+            elif choix == '7':
                 print("\n\nFermeture du gestionnaire.")
                 time.sleep(2)
                 os.system('cls' if os.name == 'nt' else 'clear')
@@ -60,6 +73,24 @@ class PasswordManager:
         data[site] = {'username': username, 'password': password}
         self.crypto.save_data(data)
         print("\nMot de passe ajouté avec succès.")
+        time.sleep(2)
+        os.system('cls' if os.name == 'nt' else 'clear')
+    
+    def rechercher_password(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\t\t\t\tRecherche de mot de passe.\n")
+        recherche = input("Entrez le nom (ou une partie) du site à rechercher : ").lower()
+        data = self.crypto.load_data()
+        resultats = {site: creds for site, creds in data.items() if recherche in site.lower()}
+
+        if resultats:
+            print("\nRésultats trouvés :")
+            for site, creds in resultats.items():
+                print(f"- {site} : {creds['username']} / {creds['password']}")
+            input("\nAppuyez sur Entrée pour continuer...")
+        else:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("Aucun résultat trouvé.")
         time.sleep(2)
         os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -97,3 +128,27 @@ class PasswordManager:
         print("\nEntrée invalide.\n")
       time.sleep(2)
       os.system('cls' if os.name == 'nt' else 'clear')
+
+    def generer_mot_de_passe(self, longueur=16):
+        caracteres = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(caracteres) for _ in range(longueur))
+
+    def modifier_password(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\t\t\t\tModification d'un mot de passe.\n")
+        site = input("Nom du site à modifier : ")
+        data = self.crypto.load_data()
+        if site in data:
+            username = input(f"Nom d'utilisateur [{data[site]['username']}] : ") or data[site]['username']
+            password = input(f"Nouveau mot de passe (laisser vide pour conserver l'actuel) : ") or data[site]['password']
+            data[site] = {'username': username, 'password': password}
+            self.crypto.save_data(data)
+
+            print("\nMot de passe mis à jour.")
+            time.sleep(2)
+            os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("Ce site n'existe pas dans la base.")
+            time.sleep(2)
+            os.system('cls' if os.name == 'nt' else 'clear')
