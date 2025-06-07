@@ -21,7 +21,6 @@ class Authenticator:
         return os.path.exists(self.HASH_FILE) and self.salt is not None
 
     def setup_master_password(self):
-        # Demande et confirmation du mot de passe maître
         while True:
             pwd = getpass.getpass('Définissez un mot de passe maître : ')
             pwd_confirm = getpass.getpass('Confirmez le mot de passe maître : ')
@@ -29,13 +28,10 @@ class Authenticator:
                 print('Les mots de passe ne correspondent pas, réessayez.')
             else:
                 break
-        # Génère et stocke le salt
-        self.salt = os.urandom(16)
+        self.salt = os.urandom(16) 
         with open(self.SALT_FILE, 'wb') as f:
             f.write(self.salt)
-        # Stocke le hash dérivé
         key = self._derive_key(pwd)
-        # On stocke la partie hashée en base64
         with open(self.HASH_FILE, 'wb') as f:
             f.write(key)
         print('Mot de passe maître configuré avec succès.')
@@ -51,7 +47,6 @@ class Authenticator:
       return False
 
     def _derive_key(self, password: str) -> bytes:
-        # Dérive une clé de 32 bytes à partir du password + salt
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
