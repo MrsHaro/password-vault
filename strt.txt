@@ -15,3 +15,19 @@ password-vault/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
+
+Choix de la bibliothèque : on part avec Tkinter pour l’instant ?
+
+Écran d’accueil :
+
+  Bouton « Se connecter »
+
+  Bouton « Creer un compte »
+
+  Connexion / Inscription avec champs utilisateurs
+
+  Coffre visuel avec liste des mots de passe
+
+  Ajout, modification, suppression, recherche avec formulaires
+
+  Bouton « Déconnexion »

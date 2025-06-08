@@ -6,8 +6,8 @@ import string
 
 class PasswordManager:
     def __init__(self, auth):
-        key = auth._derive_key(getattr(auth, 'password', ''))
-        self.crypto = CryptoManager(key)
+        key = auth._derive_key(auth.password, auth.salt)
+        self.crypto = CryptoManager(key, auth.username)
         self.crypto.initialize_vault()
 
     def run(self):

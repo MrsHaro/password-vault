@@ -10,9 +10,9 @@
 etapes de developpement :
   ✅ Authentification avec mot de passe maître 
   ✅ Systeme de chiffrement/dechiffrement du fichier vault 
-  ❌ CRUD des mots de passe (add/edit/delete/show) 
-  ❌ Recherche 
-  ❌ Generateur de mots de passe 
-  ❌ Interface (CLI first) 
-  ❌ Ajout de tests  
+  ✅ CRUD des mots de passe (add/edit/delete/show) 
+  ✅ Recherche 
+  ✅ Generateur de mots de passe 
+  ✅ Interface (CLI first) 
+  ✅ Ajout de tests  
   ❌ Emballage, deploiement et README
