@@ -12,7 +12,8 @@ password-vault/
 │   └── generator.py   
 ├── tests/
 │   └── test_crypto.py
-├── requirements.txt
+├── gui/
+│   └── app.py
 ├── .gitignore
 └── README.md
 

@@ -15,28 +15,28 @@ class PasswordManager:
         while True:
             print("\t\t\t\tBienvenue dans le gestionnaire de mots de passe.\n")
             print("\t\t\t--- MENU ---")
-            print("1. Lister les mots de passe")
-            print("2. Ajouter un mot de passe")
+            print("1. Ajouter un mot de passe")
+            print("2. Afficher les mots de passe")
             print("3. Supprimer un mot de passe")
             print("4. Rechercher un mot de passe")
-            print("5. Générer un mot de passe aléatoire")
-            print("6. Modifier un mot de passe")
+            print("5. Modifier un mot de passe")
+            print("6. Générer un mot de passe")
             print("7. Quitter")
             choix = input("Choix : ")
 
             if choix == '1':
-                self.lister_passwords()
-            elif choix == '2':
                 self.ajouter_password()
+            elif choix == '2':
+                self.lister_passwords()
             elif choix == '3':
                 self.supprimer_password()
             elif choix == '4':
                 self.rechercher_password()
-            elif choix == '5':
+            elif choix == '6':
                 print("\n\nMot de passe généré :", self.generer_mot_de_passe())
                 input("\nAppuyez sur Entrée pour continuer...")
                 os.system('cls' if os.name == 'nt' else 'clear')
-            elif choix == '6':
+            elif choix == '5':
                 self.modifier_password()
             elif choix == '7':
                 print("\n\nFermeture du gestionnaire.")
@@ -152,3 +152,9 @@ class PasswordManager:
             print("Ce site n'existe pas dans la base.")
             time.sleep(2)
             os.system('cls' if os.name == 'nt' else 'clear')
+      
+    def ajouter_password_direct(self, site, username, password):
+      data = self.crypto.load_data()
+      data[site] = {'username': username, 'password': password}
+      self.crypto.save_data(data)
+

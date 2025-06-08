@@ -27,9 +27,9 @@ class Authenticator:
         print("3. Quitter\n")
         choix = input("Entrer votre Choix : ")
         if choix == '1':
-            return self.login()
+            return self.login_cli()
         elif choix == '2':
-            return self.register()
+            return self.register_cli()
         elif choix == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
             print("\n\t\t\t\tMerci d'avoir utilisé Vault !")
@@ -43,7 +43,7 @@ class Authenticator:
             os.system('cls' if os.name == 'nt' else 'clear')
             return self.login_or_register()
 
-    def register(self) -> bool:
+    def register_cli(self) -> bool:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\n\t\t\t\tCréation de compte\n\n")
         username = input("Nom d'utilisateur : ")
@@ -83,7 +83,7 @@ class Authenticator:
         os.system('cls' if os.name == 'nt' else 'clear')
         return True
 
-    def login(self) -> bool:
+    def login_cli(self) -> bool:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\n\t\t\t\tConnexion\n\n")
         print("Veuillez entrer vos identifiants :")
@@ -121,6 +121,54 @@ class Authenticator:
         time.sleep(3)
         os.system('cls' if os.name == 'nt' else 'clear')
         return False
+    
+    def register(self, username: str, password: str) -> bool:
+      with open(self.USERS_FILE, 'r') as f:
+        users = json.load(f)
+
+      if username in users:
+        return False  # L'utilisateur existe déjà
+
+      salt = os.urandom(16)
+      key = self._derive_key(password, salt)
+      users[username] = {
+          'salt': base64.b64encode(salt).decode(),
+          'hash': key.decode()
+      }
+
+      with open(self.USERS_FILE, 'w') as f:
+          json.dump(users, f)
+
+      os.makedirs(os.path.join('data', 'vaults'), exist_ok=True)
+      self.username = username
+      self.password = password
+      self.salt = salt
+      return True
+    
+    def login(self, username: str, password: str) -> bool:
+      if not os.path.exists(self.USERS_FILE):
+          return False
+  
+      with open(self.USERS_FILE, 'r') as f:
+          users = json.load(f)
+  
+      if username not in users:
+          return False
+  
+      salt = base64.b64decode(users[username]['salt'])
+      hash_saved = users[username]['hash'].encode()
+  
+      key_try = self._derive_key(password, salt)
+  
+      if key_try == hash_saved:
+          self.username = username
+          self.password = password
+          self.salt = salt
+          return True
+      else:
+          return False
+
+
 
     def _derive_key(self, password: str, salt: bytes) -> bytes:
         kdf = PBKDF2HMAC(
