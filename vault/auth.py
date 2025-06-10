@@ -168,8 +168,6 @@ class Authenticator:
       else:
           return False
 
-
-
     def _derive_key(self, password: str, salt: bytes) -> bytes:
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),

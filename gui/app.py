@@ -11,7 +11,7 @@ class PasswordVaultApp:
         self.root.geometry("500x400")
         
         self.auth = Authenticator()
-        self.manager = PasswordManager(self.auth)
+        self.manager = None  # Ne pas initialiser ici
         self.current_user = None
         self.show_home()
 
@@ -71,6 +71,7 @@ class PasswordVaultApp:
             password = password_entry.get()
             if self.auth.login(username, password):
                 self.current_user = self.auth.username
+                self.manager = PasswordManager(self.auth)  # Initialiser ici
                 messagebox.showinfo("Connexion", "Connexion réussie !")
                 self.dashboard()
             else:
@@ -108,6 +109,7 @@ class PasswordVaultApp:
                 return
 
             if self.auth.register(username, password):
+                self.manager = PasswordManager(self.auth)  # Initialiser ici si besoin
                 messagebox.showinfo("Inscription", "Compte créé avec succès !")
                 self.show_home()
             else:
@@ -126,11 +128,11 @@ class PasswordVaultApp:
         tk.Label(frame, text=welcome_text, font=("Arial", 14)).pack(pady=10)
 
         tk.Button(frame, text="Ajouter un mot de passe", width=30, command=self.show_add_password_screen).pack(pady=5)
-        tk.Button(frame, text="Afficher les mots de passe", width=30, command=self.not_implemented).pack(pady=5)
-        tk.Button(frame, text="Supprimer un mot de passe", width=30, command=self.not_implemented).pack(pady=5)
-        tk.Button(frame, text="Rechercher un mot de passe", width=30, command=self.not_implemented).pack(pady=5)
-        tk.Button(frame, text="Modifier un mot de passe", width=30, command=self.not_implemented).pack(pady=5)
-        tk.Button(frame, text="Générer un mot de passe", width=30, command=self.not_implemented).pack(pady=5)
+        tk.Button(frame, text="Afficher les mots de passe", width=30, command=self.show_view_passwords_screen).pack(pady=5)
+        tk.Button(frame, text="Supprimer un mot de passe", width=30, command=self.show_delete_password_screen).pack(pady=5)
+        tk.Button(frame, text="Rechercher un mot de passe", width=30, command=self.show_search_password_screen).pack(pady=5)
+        tk.Button(frame, text="Modifier un mot de passe", width=30, command=self.show_edit_password_screen).pack(pady=5)
+        tk.Button(frame, text="Générer un mot de passe", width=30, command=self.show_generate_password_screen).pack(pady=5)
         tk.Button(
             frame,
             text="Déconnexion",
@@ -177,7 +179,7 @@ class PasswordVaultApp:
           if site and username and password:
               self.manager.ajouter_password_direct(site, username, password)
               messagebox.showinfo("Succès", "Mot de passe ajouté !")
-              self.create_dashboard_screen()
+              self.dashboard()
           else:
               messagebox.showerror("Erreur", "Tous les champs sont obligatoires")
 
@@ -188,9 +190,149 @@ class PasswordVaultApp:
       
       back_btn.pack()
 
+    # !Afficher les mots de passe
+    def show_view_passwords_screen(self):
+        self.clear_window()
+        title_label = tk.Label(self.root, text="Mots de passe enregistrés", font=("Helvetica", 18, "bold"))
+        title_label.pack(pady=20)
+
+        # Utilise la nouvelle méthode pour obtenir les mots de passe
+        passwords = self.manager.get_passwords()
+        if not passwords:
+            messagebox.showinfo("Aucun mot de passe", "Aucun mot de passe enregistré.")
+            self.dashboard()
+            return
+
+        for site, creds in passwords.items():
+            password_info = f"{site} :\n    Nom d'utilisateur: {creds['username']}\n    Mot de passe: {creds['password']}"
+            password_label = tk.Label(self.root, text=password_info, anchor="w", justify="left", font=("Arial", 12))
+            password_label.pack(anchor="w", padx=20, pady=5)
+
+        back_btn = tk.Button(self.root, text="Retour", command=self.dashboard)
+        back_btn.pack(pady=10)
+
     def not_implemented(self):
         messagebox.showinfo("À venir", "Cette fonctionnalité sera bientôt disponible.")
     
     def clear_window(self):
       for widget in self.root.winfo_children():
         widget.destroy()
+
+    def show_delete_password_screen(self):
+        self.clear_window()
+        title_label = tk.Label(self.root, text="Supprimer un mot de passe", font=("Helvetica", 18, "bold"))
+        title_label.pack(pady=20)
+
+        passwords = self.manager.get_passwords()
+        if not passwords:
+            messagebox.showinfo("Aucun mot de passe", "Aucun mot de passe enregistré.")
+            self.dashboard()
+            return
+
+        sites = list(passwords.keys())
+        var = tk.StringVar(value=sites[0])
+
+        for site in sites:
+            tk.Radiobutton(self.root, text=site, variable=var, value=site).pack(anchor="w", padx=20)
+
+        def delete():
+            site = var.get()
+            if site:
+                self.manager.supprimer_password_direct(site)
+                messagebox.showinfo("Succès", f"Mot de passe pour '{site}' supprimé.")
+                self.dashboard()
+
+        tk.Button(self.root, text="Supprimer", command=delete, bg="red", fg="white").pack(pady=10)
+        tk.Button(self.root, text="Retour", command=self.dashboard).pack(pady=5)
+
+    def show_search_password_screen(self):
+        self.clear_window()
+        title_label = tk.Label(self.root, text="Rechercher un mot de passe", font=("Helvetica", 18, "bold"))
+        title_label.pack(pady=20)
+
+        search_label = tk.Label(self.root, text="Nom du site à rechercher :")
+        search_label.pack()
+        search_entry = tk.Entry(self.root)
+        search_entry.pack()
+
+        result_label = tk.Label(self.root, text="", font=("Arial", 12))
+        result_label.pack(pady=10)
+
+        def search():
+            query = search_entry.get().lower()
+            results = []
+            passwords = self.manager.get_passwords()
+            for site, creds in passwords.items():
+                if query in site.lower():
+                    results.append(f"{site} :\n    Nom d'utilisateur: {creds['username']}\n    Mot de passe: {creds['password']}")
+            if results:
+                result_label.config(text="\n\n".join(results))
+            else:
+                result_label.config(text="Aucun résultat trouvé.")
+
+        tk.Button(self.root, text="Rechercher", command=search).pack(pady=5)
+        tk.Button(self.root, text="Retour", command=self.dashboard).pack(pady=5)
+
+    def show_edit_password_screen(self):
+        self.clear_window()
+        title_label = tk.Label(self.root, text="Modifier un mot de passe", font=("Helvetica", 18, "bold"))
+        title_label.pack(pady=20)
+
+        passwords = self.manager.get_passwords()
+        if not passwords:
+            messagebox.showinfo("Aucun mot de passe", "Aucun mot de passe enregistré.")
+            self.dashboard()
+            return
+
+        sites = list(passwords.keys())
+        var = tk.StringVar(value=sites[0])
+
+        for site in sites:
+            tk.Radiobutton(self.root, text=site, variable=var, value=site).pack(anchor="w", padx=20)
+
+        username_label = tk.Label(self.root, text="Nouveau nom d'utilisateur (laisser vide pour ne pas changer) :")
+        username_label.pack()
+        username_entry = tk.Entry(self.root)
+        username_entry.pack()
+
+        password_label = tk.Label(self.root, text="Nouveau mot de passe (laisser vide pour ne pas changer) :")
+        password_label.pack()
+        password_entry = tk.Entry(self.root)
+        password_entry.pack()
+
+        def edit():
+            site = var.get()
+            if site:
+                username = username_entry.get() or passwords[site]['username']
+                password = password_entry.get() or passwords[site]['password']
+                self.manager.ajouter_password_direct(site, username, password)
+                messagebox.showinfo("Succès", f"Mot de passe pour '{site}' modifié.")
+                self.dashboard()
+
+        tk.Button(self.root, text="Modifier", command=edit).pack(pady=10)
+        tk.Button(self.root, text="Retour", command=self.dashboard).pack(pady=5)
+
+    def show_generate_password_screen(self):
+        self.clear_window()
+        title_label = tk.Label(self.root, text="Générer un mot de passe", font=("Helvetica", 18, "bold"))
+        title_label.pack(pady=20)
+
+        length_label = tk.Label(self.root, text="Longueur du mot de passe :")
+        length_label.pack()
+        length_entry = tk.Entry(self.root)
+        length_entry.insert(0, "16")
+        length_entry.pack()
+
+        result_label = tk.Label(self.root, text="", font=("Arial", 12, "bold"))
+        result_label.pack(pady=10)
+
+        def generate():
+            try:
+                length = int(length_entry.get())
+                password = self.manager.generer_mot_de_passe(length)
+                result_label.config(text=password)
+            except Exception:
+                result_label.config(text="Erreur : longueur invalide.")
+
+        tk.Button(self.root, text="Générer", command=generate).pack(pady=5)
+        tk.Button(self.root, text="Retour", command=self.dashboard).pack(pady=5)

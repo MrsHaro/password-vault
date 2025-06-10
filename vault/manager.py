@@ -158,3 +158,24 @@ class PasswordManager:
       data[site] = {'username': username, 'password': password}
       self.crypto.save_data(data)
 
+    def get_passwords(self):
+        return self.crypto.load_data()
+    
+    def supprimer_password_direct(self, site):
+        data = self.crypto.load_data()
+        if site in data:
+            del data[site]
+            self.crypto.save_data(data)
+            
+    def modifier_password_direct(self, site, username, password):
+        data = self.crypto.load_data()
+        if site in data:
+            data[site] = {'username': username, 'password': password}
+            self.crypto.save_data(data)
+    
+    def search_passwords(self, query):
+        data = self.crypto.load_data()
+        return {site: creds for site, creds in data.items() if query.lower() in site.lower()}
+
+
+
