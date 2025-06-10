@@ -27,9 +27,6 @@ Il permet à chaque utilisateur de créer un compte personnel et de gérer facil
 
 ## 🖼️ Aperçu
 
-_Ajoutez ici une capture d’écran de l’application si vous le souhaitez !_  
-`doc/screenshot.png`
-
 ---
 
 ## 🚀 Installation & Lancement
