@@ -5,7 +5,10 @@ import json
 class CryptoManager:
     def __init__(self, key: bytes, username: str):
         self.fernet = Fernet(key)
-        self.vault_file = os.path.join('data', 'vaults', f'{username}.vault')
+        vault_dir = os.path.join('data', 'vaults')
+        if not os.path.exists(vault_dir):
+            os.makedirs(vault_dir)
+        self.vault_file = os.path.join(vault_dir, f'{username}.vault')
 
     def initialize_vault(self):
         if not os.path.exists(self.vault_file):

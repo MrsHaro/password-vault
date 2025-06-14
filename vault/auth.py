@@ -15,6 +15,10 @@ class Authenticator:
         self.password = None
         self.salt = None
         self.backend = default_backend()
+        # Création automatique du dossier et du fichier si besoin
+        data_dir = os.path.dirname(self.USERS_FILE)
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
         if not os.path.exists(self.USERS_FILE):
             with open(self.USERS_FILE, 'w') as f:
                 json.dump({}, f)

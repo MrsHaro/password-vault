@@ -7,7 +7,7 @@ from vault.manager import PasswordManager
 class PasswordVaultApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("PasswordVault")
+        self.root.title("PasswordVault (v.1.0)")
         self.root.geometry("500x400")
         
         self.auth = Authenticator()
